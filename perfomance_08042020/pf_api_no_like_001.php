@@ -1,5 +1,5 @@
 <?php
-Bitri\Main\Loader::includeModule('iblock');
+Bitrix\Main\Loader::includeModule('iblock');
 $rs = CIBlockElement::GetList(
 	[], 
 	['CODE' => 'xxx'], // правильно ['=CODE' => 'xxx'], 
