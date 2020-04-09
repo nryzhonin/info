@@ -1,11 +1,14 @@
 <?php
+
+// Различные вызовы АПИ и запросы которые они генерируют
+
 Bitrix\Main\Loader::includeModule('iblock');
 $rs = CIBlockElement::GetList(
 	[], 
-	['CODE' => 'xxx'], // правильно ['=CODE' => 'xxx'], 
-		false, 
-		false, 
-		['ID', 'CODE', 'NAME']
+	['CODE' => 'xxx'], // правильно вариант данного фильтра ['=CODE' => 'xxx'], 
+	false, 
+	false, 
+	['ID', 'CODE', 'NAME']
 );
 
 /*
@@ -22,8 +25,7 @@ WHERE
 
 Bitrix\Iblock\ElementTable::getList([
 	'select' => ['ID', 'NAME', 'CODE'],
-	'filter' => ['CODE' => 'xxx']
-	// правильно 'filter' => ['=CODE' => 'xxx']
+	'filter' => ['CODE' => 'xxx'] // правильный вариант фильтра 'filter' => ['=CODE' => 'xxx']
 ]);
 
 /*
@@ -35,17 +37,18 @@ FROM `b_iblock_element` `iblock_element`
 WHERE UPPER(`iblock_element`.`CODE`) like upper('xxx')
 */
 
+
+// С новым фильтром не получится допустить ошибку!!!
+// документация по фильтру https://clck.ru/MsSRG
 Bitrix\Iblock\ElementTable::query()
 	->setSelect(['ID', 'NAME', 'CODE'])
 	->where('CODE','xxx')->exec();
-/*
- * https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=3030&LESSON_PATH=3913.5062.5748.3030
 
+/*
 SELECT
 	`iblock_element`.`ID` AS `ID`,
 	`iblock_element`.`NAME` AS `NAME`,
 	`iblock_element`.`CODE` AS `CODE`
 FROM `b_iblock_element` `iblock_element`
 WHERE `iblock_element`.`CODE` = 'xxx'
-
 */

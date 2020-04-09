@@ -3,25 +3,22 @@ $tokenID = 'XXXXXXXXXXXXXXXXXXXXX';
 $host = 'XXXX.ru';
 $user = 1;
 
-/**
- * Начинаем с нуля или с какого то предыдущего шага
- */
+// Начинаем с нуля или с предыдущего шага.
+
 $leadID = 0;
 $finish = false;
 
 while (!$finish)
 {
-	/**
-	* Выполняем, пока не заберем все данные, не стоит забывать и про задержку между хитами.
-	* Каждый раз выбираем только 50 значений, начиная с того элемента, на котором остановились прошлый раз
-	*/
+	// Выполняем, пока не заберем все данные.
+	// Не забываем и про задержку между хитами, что бы не привышать лимиты 
 
 	$http = new \Bitrix\Main\Web\HttpClient();
 	$http->setTimeout(5);
 	$http->setStreamTimeout(50);
 
 	$json = $http->post(
-		'https://'.$host.'/rest/'.$user.'/'.$tokenID.'/crm.lead.list/',
+		'https://'.$host.'/rest/'.$user.'/'.$tokenID.'/crm.lead.list/', 
 		[
 			'order' => ['ID' => 'ASC'],
 			'filter' => ['>ID' => $leadID],
@@ -37,7 +34,8 @@ while (!$finish)
 		{
 			$leadID = $lead['ID'];
 		}
-		// Do something
+
+		// Выполняем какие либо действия
 	}
 	else 
 	{ 
@@ -46,7 +44,7 @@ while (!$finish)
 }
 
 /*
-// C выполнением count
+// Пример ответа сервера с подсчетом количества
 Array (
 	[result] => Array(
 		[0] => Array()
@@ -67,7 +65,7 @@ Array (
 	)
 )
 
-// Без выполнения count
+// Пример ответа сервера, без выполнения count
 Array(
 	[result] => Array (
 		[0] => Array()

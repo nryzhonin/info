@@ -1,4 +1,6 @@
 <?php
+// Отключение сброса тегированного кеша инфоблоков и пересчета фасетного индекса, во время импорта.
+
 Bitrix\Iblock\PropertyIndex\Manager::enableDeferredIndexing();
 Bitrix\Catalog\Product\Sku::enableDeferredCalculation();
 

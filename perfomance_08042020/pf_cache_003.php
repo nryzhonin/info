@@ -1,5 +1,7 @@
 <?php
 
+// Пример добавления метки времени в ключ кеширования компонента
+
 $APPLICATION->IncludeComponent(
 	"bitrix:intranet.structure.birthday.nearest",
 	"widget",
