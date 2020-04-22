@@ -5,7 +5,7 @@
 global $CACHE_MANAGER;
 function getKey($key)
 {
-	$dir = '/tagdir1/'.$key.'/';							// Не корректный вариант
+	$dir = '/tagdir1/'.$key.'/';				// Не корректный вариант
 	//$dir = '/tagdir1/'.substr(md5($key),2,2)./.$key.'/';	// Правильный вариаент
 	$cache = Bitrix\Main\Data\Cache::createInstance();
 	if ($cache->initCache(3600, $key, $dir))
