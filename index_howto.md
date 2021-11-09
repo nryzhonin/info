@@ -156,5 +156,80 @@ ALTER TABLE POSTS ADD INDEX ID_AUTHOR (AUTHOR); -- индекс дл€ ускорени€ фильтрац
 в обратную сторону.
 
 
+### Explain запросов
 
+ƒл€ того, что бы определить как будет выполн€тс€ запрос и найти причины его медленного выполнени€ можно существует 
+команда EXPLAIN. –ассмотрим ее работу на примере простого запроса.
 
+“аблица
+```sql
+CREATE TABLE `b_iblock_element` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `IBLOCK_ID` int(11) NOT NULL DEFAULT '0',
+  `IBLOCK_SECTION_ID` int(11) DEFAULT NULL,
+  `SORT` int(11) NOT NULL DEFAULT '500',
+  `NAME` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `WF_PARENT_ELEMENT_ID` int(11) DEFAULT NULL,
+  `XML_ID` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CODE` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `WF_LAST_HISTORY_ID` int(11) DEFAULT NULL,
+  `SHOW_COUNTER` int(18) DEFAULT NULL,
+  `SHOW_COUNTER_START` datetime DEFAULT NULL,
+  
+  PRIMARY KEY (`ID`),
+  KEY `ix_iblock_element_1` (`IBLOCK_ID`,`IBLOCK_SECTION_ID`),
+  KEY `ix_iblock_element_4` (`IBLOCK_ID`,`XML_ID`,`WF_PARENT_ELEMENT_ID`),
+  KEY `ix_iblock_element_3` (`WF_PARENT_ELEMENT_ID`),
+  KEY `bx_perf_001` (`NAME`,`IBLOCK_ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1318928 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+```
+
+```sql
+EXPLAIN
+SELECT * FROM b_iblock_element WHERE ACTIVE = 'Y' AND NAME LIKE 'rns%';
+```
+¬ыполнив, приведенный выше запрос, мы получим следующий результат
+![ѕример простого EXPLAIN](img/explain_1.png)
+√де:
+* selected_type - указывает тип выборки в запросе
+* table - таблица по которой делалась выборка
+* type - тип фильтрации, в данном случае диапазон
+* possible_keys - возможные ключи, дл€ данного запроса
+* key - ключ выбранный оптимизатором, дл€ выполнени€ запроса
+* key_len - длина ключа
+* ref - используемые ссылки при фильтрации на значени€ других таблиц
+* rows - количество строк, которые перебрал mysql, при выполнении запроса (чем меньше тем лучше) 
+* Extra - дополнительна€ информаци€ по плану выполнени€ запроса
+
+ѕо приведенному эксплайну видно, что запрос в целом оптимальный, так как использовалось всего 5 строк и использовалс€ 
+индекс. Ќо если посмотреть на колонку Extra видно, что помимо индекса, полученный диапазон перебиралс€ построчно 
+и примен€лс€ фильтр. “аким образом при определенном наборе данных запрос может оказатьс€ не эффективным.
+
+ƒл€ более детального же понимани€ происход€щего, лучше использовать explain в json формате.
+
+```sql
+EXPLAIN format = json
+SELECT * FROM b_iblock_element WHERE ACTIVE = 'Y' AND NAME LIKE 'rns%';
+```
+¬ этом случае мы получим, следующий результат
+```json
+{
+  "query_block": {
+    "select_id": 1,
+    "table": {
+      "table_name": "b_iblock_element",
+      "access_type": "range",
+      "possible_keys": ["bx_perf_001"],
+      "key": "bx_perf_001",
+      "key_length": "767",
+      "used_key_parts": ["NAME"],
+      "rows": 5,
+      "filtered": 100,
+      "index_condition": "(b_iblock_element.`NAME` like 'rns%')",
+      "attached_condition": "(b_iblock_element.ACTIVE = 'Y')"
+    }
+  }
+}
+```
+ѕо которому видно, что из составного индекса использовалось только одно поле `NAME`. ј дальше, полученный диапазон 
+построчно сравнивалс€ с условием `(b_iblock_element.ACTIVE = 'Y')`.
