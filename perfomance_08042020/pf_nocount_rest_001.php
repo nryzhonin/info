@@ -11,14 +11,14 @@ $finish = false;
 while (!$finish)
 {
 	// Выполняем, пока не заберем все данные.
-	// Не забываем и про задержку между хитами, что бы не привышать лимиты 
+	// Не забываем и про задержку между хитами, что бы не превышать лимиты
 
 	$http = new \Bitrix\Main\Web\HttpClient();
 	$http->setTimeout(5);
 	$http->setStreamTimeout(50);
 
 	$json = $http->post(
-		'https://'.$host.'/rest/'.$user.'/'.$tokenID.'/crm.lead.list/', 
+		'https://'.$host.'/rest/'.$user.'/'.$tokenID.'/crm.lead.list/',
 		[
 			'order' => ['ID' => 'ASC'],
 			'filter' => ['>ID' => $leadID],
@@ -35,10 +35,10 @@ while (!$finish)
 			$leadID = $lead['ID'];
 		}
 
-		// Выполняем какие либо действия
+		// Выполняем какие-либо действия
 	}
-	else 
-	{ 
+	else
+	{
 		$finish = true;
 	}
 }

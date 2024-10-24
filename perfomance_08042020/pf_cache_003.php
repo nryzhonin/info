@@ -11,7 +11,7 @@ $APPLICATION->IncludeComponent(
 		"DATE_FORMAT" => "j F",
 		"DETAIL_URL" => "#SITE_DIR#company/personal/user/#USER_ID#/",
 		"DEPARTMENT" => "0",
-		.....
+//		.....
 		"CACHE_DATE" => date('dmy')
 	)
 );
